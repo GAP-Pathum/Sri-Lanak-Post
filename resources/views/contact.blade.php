@@ -23,7 +23,7 @@
         <p class="text-center mb-8">Have questions or need assistance? Send us a message below.</p>
 
         <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
-            <form action="{{ route('contact.submit') }}" method="POST">
+            <form action="{{ route('contact.submit') }}" method="POST" novalidate>
                 @csrf
 
                 <!-- Name Field -->
@@ -33,6 +33,7 @@
                            value="{{ auth()->check() ? auth()->user()->name : '' }}" 
                            class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                            required>
+                    <p class="mt-1 text-sm text-red-600" id="name-error"></p>
                 </div>
 
                 <!-- Email Field -->
@@ -42,6 +43,7 @@
                            value="{{ auth()->check() ? auth()->user()->email : '' }}" 
                            class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                            required>
+                    <p class="mt-1 text-sm text-red-600" id="email-error"></p>
                 </div>
 
                 <!-- Message Field -->
@@ -50,6 +52,7 @@
                     <textarea name="message" id="message" rows="4" 
                               class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
                               placeholder="Type your message here..." required></textarea>
+                    <p class="mt-1 text-sm text-red-600" id="message-error"></p>
                 </div>
 
                 <!-- Submit Button -->
@@ -67,5 +70,43 @@
     </footer>
 
     @vite('resources/js/app.js')
+
+    <script>
+        // Basic client-side form validation
+        document.querySelector('form').addEventListener('submit', function (event) {
+            let isValid = true;
+            const name = document.getElementById('name');
+            const email = document.getElementById('email');
+            const message = document.getElementById('message');
+
+            if (name.value.trim() === '') {
+                isValid = false;
+                document.getElementById('name-error').textContent = 'Name is required.';
+            } else {
+                document.getElementById('name-error').textContent = '';
+            }
+
+            if (email.value.trim() === '') {
+                isValid = false;
+                document.getElementById('email-error').textContent = 'Email is required.';
+            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
+                isValid = false;
+                document.getElementById('email-error').textContent = 'Enter a valid email address.';
+            } else {
+                document.getElementById('email-error').textContent = '';
+            }
+
+            if (message.value.trim() === '') {
+                isValid = false;
+                document.getElementById('message-error').textContent = 'Message is required.';
+            } else {
+                document.getElementById('message-error').textContent = '';
+            }
+
+            if (!isValid) {
+                event.preventDefault();
+            }
+        });
+    </script>
 </body>
 </html>
