@@ -7,63 +7,68 @@
     <title>Contact Us - SLPost</title>
     @vite('resources/css/app.css') <!-- Tailwind CSS -->
 </head>
-<body class="bg-gray-50">
-    <header class="bg-blue-600 text-white p-4">
+<body class="bg-gray-100">
+    <header class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 shadow-md">
         <div class="container mx-auto flex justify-between items-center">
             <h1 class="text-2xl font-bold">Sri Lanka Postal Service</h1>
             <nav class="flex space-x-4">
-                <a href="{{ route('home') }}" class="hover:text-gray-200">Home</a>
-                <a href="{{ route('contact') }}" class="hover:text-gray-200">Contact</a>
+                <a href="{{ route('home') }}" class="hover:underline">Home</a>
+                <a href="{{ route('contact') }}" class="hover:underline">Contact</a>
             </nav>
         </div>
     </header>
 
-    <main class="container mx-auto mt-8 p-4">
-        <h2 class="text-3xl font-semibold text-center mb-4">Contact Us</h2>
-        <p class="text-center mb-8">Have questions or need assistance? Send us a message below.</p>
+    <main class="container mx-auto mt-12 p-4">
+        <h2 class="text-4xl font-semibold text-center text-blue-700 mb-6">Get in Touch</h2>
+        <p class="text-center text-gray-600 mb-8">We’re here to help. Please fill out the form below and we’ll get back to you soon.</p>
 
-        <div class="max-w-lg mx-auto bg-white p-6 rounded-lg shadow-lg">
+        <div class="max-w-lg mx-auto bg-white p-8 rounded-lg shadow-lg">
             <form action="{{ route('contact.submit') }}" method="POST" novalidate>
                 @csrf
 
                 <!-- Name Field -->
-                <div class="mb-4">
-                    <label for="name" class="block text-sm font-medium text-gray-700">Name</label>
+                <div class="mb-6">
+                    <label for="name" class="block text-sm font-medium text-gray-700">Full Name</label>
                     <input type="text" name="name" id="name" 
                            value="{{ auth()->check() ? auth()->user()->name : '' }}" 
-                           class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                           required>
-                    <p class="mt-1 text-sm text-red-600" id="name-error"></p>
+                           placeholder="Enter your full name"
+                           class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                           required aria-describedby="name-error">
+                    <span id="name-error" class="text-red-500 text-sm"></span>
                 </div>
 
                 <!-- Email Field -->
-                <div class="mb-4">
-                    <label for="email" class="block text-sm font-medium text-gray-700">Email</label>
+                <div class="mb-6">
+                    <label for="email" class="block text-sm font-medium text-gray-700">Email Address</label>
                     <input type="email" name="email" id="email" 
                            value="{{ auth()->check() ? auth()->user()->email : '' }}" 
-                           class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                           required>
-                    <p class="mt-1 text-sm text-red-600" id="email-error"></p>
+                           placeholder="Enter your email"
+                           class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                           required aria-describedby="email-error">
+                    <span id="email-error" class="text-red-500 text-sm"></span>
                 </div>
 
                 <!-- Message Field -->
-                <div class="mb-4">
-                    <label for="message" class="block text-sm font-medium text-gray-700">Message</label>
+                <div class="mb-6">
+                    <label for="message" class="block text-sm font-medium text-gray-700">Your Message</label>
                     <textarea name="message" id="message" rows="4" 
-                              class="mt-1 p-2 block w-full border border-gray-300 rounded-md shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm"
-                              placeholder="Type your message here..." required></textarea>
-                    <p class="mt-1 text-sm text-red-600" id="message-error"></p>
+                              placeholder="Write your message here..."
+                              class="mt-2 w-full p-3 border rounded-lg shadow-sm focus:border-indigo-500 focus:ring-indigo-500"
+                              required aria-describedby="message-error"></textarea>
+                    <span id="message-error" class="text-red-500 text-sm"></span>
                 </div>
 
                 <!-- Submit Button -->
-                <button type="submit" class="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition">
-                    Send Message
+                <button type="submit" 
+                        class="w-full bg-indigo-600 text-white py-3 rounded-lg hover:bg-indigo-700 transition relative">
+                    <span class="loader hidden absolute left-4 top-3 w-5 h-5 border-2 border-t-transparent border-white rounded-full animate-spin"></span>
+                    Submit
                 </button>
             </form>
         </div>
     </main>
 
-    <footer class="bg-blue-600 text-white p-4 mt-8">
+    <footer class="bg-gradient-to-r from-blue-600 to-indigo-600 text-white py-4 mt-12 shadow-md">
         <div class="container mx-auto text-center">
             <p>&copy; 2024 Sri Lanka Postal Service. All rights reserved.</p>
         </div>
@@ -72,40 +77,41 @@
     @vite('resources/js/app.js')
 
     <script>
-        // Basic client-side form validation
+        // Enhanced client-side validation
         document.querySelector('form').addEventListener('submit', function (event) {
             let isValid = true;
             const name = document.getElementById('name');
             const email = document.getElementById('email');
             const message = document.getElementById('message');
+            const submitButton = event.target.querySelector('button');
+
+            // Reset errors
+            document.querySelectorAll('span[id$="-error"]').forEach(el => el.textContent = '');
 
             if (name.value.trim() === '') {
                 isValid = false;
-                document.getElementById('name-error').textContent = 'Name is required.';
-            } else {
-                document.getElementById('name-error').textContent = '';
+                document.getElementById('name-error').textContent = 'Please provide your name.';
             }
-
             if (email.value.trim() === '') {
                 isValid = false;
-                document.getElementById('email-error').textContent = 'Email is required.';
+                document.getElementById('email-error').textContent = 'Please provide your email.';
             } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value)) {
                 isValid = false;
-                document.getElementById('email-error').textContent = 'Enter a valid email address.';
-            } else {
-                document.getElementById('email-error').textContent = '';
+                document.getElementById('email-error').textContent = 'Enter a valid email.';
             }
-
             if (message.value.trim() === '') {
                 isValid = false;
-                document.getElementById('message-error').textContent = 'Message is required.';
-            } else {
-                document.getElementById('message-error').textContent = '';
+                document.getElementById('message-error').textContent = 'Message cannot be empty.';
             }
 
             if (!isValid) {
                 event.preventDefault();
+                return;
             }
+
+            // Show loading spinner on submit
+            submitButton.querySelector('.loader').classList.remove('hidden');
+            submitButton.disabled = true;
         });
     </script>
 </body>
